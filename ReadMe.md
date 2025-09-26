@@ -197,7 +197,7 @@ This project is licensed under the MIT License - see LICENSE file for details.
 
 ## 📖 References
 
-1. [ARM SME Programming Guide](https://developer.arm.com/documentation/102336/latest/)
+1. [ARM SME Programming Guide](https://learn.arm.com/learning-paths/cross-platform/multiplying-matrices-with-sme2/7-sme2-matmul-intr/)
 2. [ARM A64 Instruction Set - SME](https://developer.arm.com/architectures/instruction-sets/intrinsics/)
 3. [Apple Silicon Optimization](https://developer.apple.com/documentation/apple-silicon)
 
