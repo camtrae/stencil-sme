@@ -51,14 +51,14 @@ def setup_plot_style():
 def load_data():
     """Load the performance data"""
     intel_data = {
-        'methods': ['Baseline', 'im2row', 'Stencil2Row', 'Stencil2Row SIMD', 'Stencil2Row OpenMP'],
+        'methods': ['Baseline', 'im2row', 'Stencil2Row', 'Stencil2Row\nSIMD/SME', 'Stencil2Row\nOpenMP/SME-Tiles'],
         'time': [953.00, 936.20, 1860.75, 117.15, 61.55],
         'speedup': [1.00, 1.02, 0.51, 8.13, 15.48],
         'threads': [1, 1, 1, 1, 32]
     }
     
     apple_data = {
-        'methods': ['Baseline', 'Im2Row GEMV', 'Stencil2Row Direct', 'SME ingle Tile', 'SME 4-Tiles'],
+        'methods': ['Baseline', 'Im2Row GEMV', 'Stencil2Row Direct', 'SME Single Tile', 'SME 4-Tiles'],
         'time': [804.15, 457.70, 826.55, 15.40, 8.75],
         'speedup': [1.00, 1.76, 0.97, 52.22, 91.90],
         'threads': [1, 1, 1, 1, 1]
@@ -83,12 +83,6 @@ def create_execution_time_plot(ax, intel_data, apple_data, colors):
         bar = ax.bar(x[i] - bar_width/2, time, bar_width,
                      color=color, alpha=alpha, edgecolor=edgecolor, linewidth=linewidth)
         intel_bars.append(bar)
-        
-        # Thread annotation
-        if threads > 1:
-            ax.text(x[i] - bar_width/2, time * 1.1, f'{threads}t',
-                   ha='center', va='bottom', fontsize=9, fontweight='bold',
-                   color=colors['text'])
     
     # Apple bars
     apple_bars = []
@@ -105,14 +99,22 @@ def create_execution_time_plot(ax, intel_data, apple_data, colors):
     # Value labels for best performers
     best_intel_idx = intel_data['time'].index(min(intel_data['time']))
     best_apple_idx = apple_data['time'].index(min(apple_data['time']))
-    
-    ax.text(x[best_intel_idx] - bar_width/2, intel_data['time'][best_intel_idx]/2,
-           f'{intel_data["time"][best_intel_idx]:.1f} μs', ha='center', va='center',
-           fontsize=9, fontweight='bold', color='white')
-    
-    ax.text(x[best_apple_idx] + bar_width/2, apple_data['time'][best_apple_idx]/2,
-           f'{apple_data["time"][best_apple_idx]:.1f} μs', ha='center', va='center',
-           fontsize=9, fontweight='bold', color='white')
+
+    # Intel best time label - unified style with Apple
+    intel_best_time = intel_data['time'][best_intel_idx]
+    ax.text(x[best_intel_idx] - bar_width/2, intel_best_time + 9,
+        f'{intel_best_time:.1f} μs', ha='center', va='bottom',
+        fontsize=9, fontweight='bold', color=colors['intel_primary'],
+        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
+                    alpha=0.9, edgecolor=colors['intel_primary'], linewidth=1))
+
+    # Apple best time label - same style
+    apple_best_time = apple_data['time'][best_apple_idx]
+    ax.text(x[best_apple_idx] + bar_width/2, apple_best_time + 1.5,
+        f'{apple_best_time:.1f} μs', ha='center', va='bottom',
+        fontsize=9, fontweight='bold', color=colors['apple_primary'],
+        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
+                    alpha=0.9, edgecolor=colors['apple_primary'], linewidth=1))
     
     # Configure axes
     ax.set_ylabel('Execution Time (μs)', fontweight='bold', color=colors['text'])
@@ -145,7 +147,6 @@ def create_execution_time_plot(ax, intel_data, apple_data, colors):
 def create_speedup_plot(ax, intel_data, apple_data, colors):
     """Create the speedup factor line chart"""
     optimization_levels = np.arange(5)
-    method_names = ['Baseline', 'Im2row', 'Stencil2Row', 'SIMD/SME', 'OpenMP/SME-Tiles']
     
     # Intel speedup line
     ax.plot(optimization_levels, intel_data['speedup'], 
@@ -179,24 +180,18 @@ def create_speedup_plot(ax, intel_data, apple_data, colors):
     ax.axhline(y=1.0, color=colors['baseline'], 
               linestyle='--', linewidth=1.5, alpha=0.5, label='Baseline (1.0×)', zorder=1)
     
-    # Configure axes
-    # ax.set_xlabel('Optimization Level', fontweight='bold', color=colors['text'])
+    # Configure axes - Now using the same method names as the first plot
     ax.set_ylabel('Speedup Factor (×)', fontweight='bold', color=colors['text'])
     ax.set_yscale('log')
     ax.set_ylim([0.4, 150])
     ax.set_xlim([-0.3, 4.3])
     ax.set_xticks(optimization_levels)
-    ax.set_xticklabels(['O0', 'O1', 'O2', 'O3', 'O4'], fontsize=10)
+    # Use the same method names as in the first plot for consistency
+    ax.set_xticklabels(intel_data['methods'], fontsize=9)
     ax.set_title('Speedup Factor Analysis', fontweight='bold', pad=15, color=colors['text'])
     ax.legend(loc='upper left', frameon=True, framealpha=0.95, fontsize=9,
              fancybox=False, edgecolor=colors['grid'])
     ax.grid(True, alpha=0.3, linestyle='--', zorder=0, color=colors['grid'])
-    
-    # Method names below x-axis
-    for i, name in enumerate(method_names):
-        ax.text(i, 0.32, name, ha='center', va='top', 
-               fontsize=7.5, rotation=0, color=colors['text'], 
-               alpha=0.6, style='italic')
     
     # Speedup summary
     speedup_text = (f"Peak Speedup:\n"
