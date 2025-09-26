@@ -44,7 +44,7 @@ Measured on Apple Silicon M4 (2024 Mac Mini):
 | **Im2Row** | 469.80 | 1.76x | GEMV approach |
 | **Stencil2Row** | 838.75 | 0.98x | GEMM method |
 | **SME Single Tile** | 15.45 | 53.43x | Single ZA tile acceleration |
-| **SME 4-Tiles** | **8.70** | **94.88x** | Optimal row-split parallelization |
+| **SME 4-Tiles** | **8.80** | **94.88x** | Optimal row-split parallelization |
 
 *Test configuration: 64×64 input, 15×15 kernel, 20 iterations average*
 
