@@ -252,7 +252,7 @@ def main():
         print(f'✓ Saved {filename} - {settings["desc"]}')
     
     # High-resolution version
-    plt.savefig('stencil_performance_comparison_hires.png', dpi=600, 
+    plt.savefig('performance_analysis.png', dpi=600, 
                bbox_inches='tight', facecolor='white')
     print('✓ Saved stencil_performance_comparison_hires.png - Publication quality (600 DPI)')
     
