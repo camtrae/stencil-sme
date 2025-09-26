@@ -18,16 +18,20 @@ This project demonstrates multiple optimization strategies for stencil computati
 
 ```
 arm-sme-stencil/
-├── stencil_15x15_sme_optimized.c  # Main implementation
-├── Makefile                        # Make build configuration
-├── CMakeLists.txt                  # CMake configuration
-├── README.md                       # This file
-│── build/                          # Build artifacts (generated)
-│     ├── obj/                        # Object files
-│     └── bin/                        # Executables
-├── doc/                               # Documentation
-│     ├── sme_gemm_benchmark.md         # sme-specific benchmark results
-│     └── xeon_m4_stencil_perf.md      # Intel vs Apple M4 comparison
+├── stencil_15x15_sme_optimized.c    # Main implementation
+├── Makefile                          # Make build configuration
+├── CMakeLists.txt                    # CMake configuration
+├── README.md                         # This file
+├── LICENSE                           # MIT License file
+├── .gitignore                        # Git ignore rules
+├── build/                            # Build artifacts (generated)
+│   ├── obj/                          # Object files
+│   └── bin/                          # Executables
+├── doc/                              # Documentation
+│   ├── sme_gemm_benchmark.md         # SME-specific benchmark results
+│   └── xeon_m4_stencil_perf.md      # Intel vs Apple M4 comparison
+└── figures/                           # Image resources
+    └── performance_analysis.png      # Performance charts
 ```
 
 ## 🚀 Performance Results
