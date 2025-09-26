@@ -22,12 +22,12 @@ arm-sme-stencil/
 ├── Makefile                        # Make build configuration
 ├── CMakeLists.txt                  # CMake configuration
 ├── README.md                       # This file
-└── build/                          # Build artifacts (generated)
+│── build/                          # Build artifacts (generated)
 │    ├── obj/                        # Object files
 │    └── bin/                        # Executables
 ├── doc/                               # Documentation
 │   ├── sme_gemm_benchmark.md         # sme-specific benchmark results
-│   ├── xeon_m4_stencil_perf.md      # Intel vs Apple M4 comparison
+│   └── xeon_m4_stencil_perf.md      # Intel vs Apple M4 comparison
 ```
 
 ## 🚀 Performance Results
