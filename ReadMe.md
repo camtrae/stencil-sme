@@ -14,6 +14,22 @@ This project demonstrates multiple optimization strategies for stencil computati
 - **Automatic Verification**: Ensures numerical accuracy across all implementations
 - **Flexible Build System**: Supports both Make and CMake
 
+## 📁 Project Structure
+
+```
+arm-sme-stencil/
+├── stencil_15x15_sme_optimized.c  # Main implementation
+├── Makefile                        # Make build configuration
+├── CMakeLists.txt                  # CMake configuration
+├── README.md                       # This file
+└── build/                          # Build artifacts (generated)
+│    ├── obj/                        # Object files
+│    └── bin/                        # Executables
+├── doc/                               # Documentation
+│   ├── sme_gemm_benchmark.md         # sme-specific benchmark results
+│   ├── xeon_m4_stencil_perf.md      # Intel vs Apple M4 comparison
+```
+
 ## 🚀 Performance Results
 
 Measured on Apple Silicon M4 (2024 Mac Mini):
@@ -21,10 +37,10 @@ Measured on Apple Silicon M4 (2024 Mac Mini):
 | Implementation | Time (μs) | Speedup | Description |
 |---------------|-----------|---------|-------------|
 | **Baseline** | 825.45 | 1.00x | Direct nested-loop convolution |
-| **Im2Row + GEMV** | 469.80 | 1.76x | Matrix transformation approach |
-| **Stencil2Row Direct** | 838.75 | 0.98x | Boundary-aware matrix method |
+| **Im2Row** | 469.80 | 1.76x | GEMV approach |
+| **Stencil2Row** | 838.75 | 0.98x | GEMM method |
 | **SME Single Tile** | 15.45 | 53.43x | Single ZA tile acceleration |
-| **SME 4-Tiles (Row)** | **8.70** | **94.88x** | Optimal row-split parallelization |
+| **SME 4-Tiles** | **8.70** | **94.88x** | Optimal row-split parallelization |
 
 *Test configuration: 64×64 input, 15×15 kernel, 20 iterations average*
 
@@ -37,8 +53,6 @@ The performance charts reveal significant differences between traditional CPU op
   <br>
   <em>Figure 1: Execution time comparison (left) and speedup factor analysis (right)</em>
 </div>
-
-The results demonstrate that dedicated matrix acceleration hardware (SME) significantly outperforms traditional multi-threading approaches, achieving nearly 6x better efficiency.
 
 ## 📋 Requirements
 
@@ -69,7 +83,7 @@ brew install llvm
 ### Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/arm-sme-stencil.git
+git clone https://github.com/camtrae/arm-sme-stencil.git
 cd arm-sme-stencil
 ```
 
@@ -112,16 +126,6 @@ make -j$(sysctl -n hw.ncpu)
 make benchmark
 ```
 
-#### CMake Options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `CMAKE_BUILD_TYPE` | Release | Build configuration (Debug/Release) |
-| `ENABLE_SME` | ON | Enable SME optimizations |
-| `BUILD_TESTS` | ON | Build test suite |
-| `USE_LTO` | OFF | Enable Link-Time Optimization |
-| `USE_FAST_MATH` | OFF | Enable fast-math (reduces precision) |
-
 ## 🔬 Implementation Details
 
 ### 1. Baseline Implementation
@@ -131,25 +135,19 @@ make benchmark
 
 ### 2. Im2Row Transformation
 - Reshapes input into row-major matrix
-- Converts convolution to matrix-vector multiplication
+- Converts stencil to matrix-vector multiplication
 - Improves cache locality
 
 ### 3. Stencil2Row Algorithm
-- Innovative boundary-aware approach
 - Generates two matrices for edge handling
-- Transforms stencil operation to matrix multiplication
+- Converts stencil to matrix-matrix multiplication
 
 ### 4. SME Single Tile
 - Utilizes one 16×16 ZA accumulator tile
 - Hardware-accelerated outer product operations
 - Basic SME implementation
 
-### 5. SME 4-Tiles Column Split
-- Parallel processing of 4 column blocks
-- Simultaneous use of all ZA tiles
-- Improved throughput
-
-### 6. SME 4-Tiles Row Split (Optimal)
+### 5. SME 4-Tiles Row Split (Optimal)
 - Parallel processing of 4 row blocks
 - Superior memory access patterns
 - Minimal cache misses
@@ -162,34 +160,6 @@ make benchmark
 - **Output Size**: 64×64
 - **Data Type**: 32-bit float
 - **SME Configuration**: 4 tiles × 16×16 elements
-
-## 🧪 Verification
-
-The program automatically verifies numerical accuracy:
-
-```
-=========== Result Verification ===========
-Verify Baseline vs Im2Row:
-  Max difference: 1.234568e-09
-  Different points: 0 / 4096
-✓ All methods produce consistent results!
-```
-
-## 📁 Project Structure
-
-```
-arm-sme-stencil/
-├── stencil_15x15_sme_optimized.c  # Main implementation
-├── Makefile                        # Make build configuration
-├── CMakeLists.txt                  # CMake configuration
-├── README.md                       # This file
-└── build/                          # Build artifacts (generated)
-│    ├── obj/                        # Object files
-│    └── bin/                        # Executables
-├── doc/                               # Documentation
-│   ├── sme_gemm_benchmark.md         # sme-specific benchmark results
-│   ├── xeon_m4_stencil_perf.md      # Intel vs Apple M4 comparison
-```
 
 ## 📚 Technical Background
 
