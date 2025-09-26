@@ -59,7 +59,7 @@ def load_data():
     
     apple_data = {
         'methods': ['Baseline', 'Im2Row GEMV', 'Stencil2Row Direct', 'SME Single Tile', 'SME 4-Tiles'],
-        'time': [804.15, 457.70, 826.55, 15.40, 8.75],
+        'time': [804.15, 457.70, 826.55, 15.40, 8.70],
         'speedup': [1.00, 1.76, 0.97, 52.22, 91.90],
         'threads': [1, 1, 1, 1, 1]
     }
