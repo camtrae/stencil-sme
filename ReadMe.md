@@ -1,6 +1,6 @@
 # ARM SME-Optimized 15×15 Stencil Computation
 
-A high-performance implementation of 15×15 stencil computation leveraging ARM Scalable Matrix Extension (SME) on Apple Silicon M4, achieving up to **94.88x speedup** over baseline implementation.
+A high-performance implementation of 15×15 stencil computation leveraging ARM Scalable Matrix Extension (SME) on Apple Silicon M4, achieving up to **91.90x speedup** over baseline implementation.
 
 ## 🎯 Overview
 
@@ -14,37 +14,17 @@ This project demonstrates multiple optimization strategies for stencil computati
 - **Automatic Verification**: Ensures numerical accuracy across all implementations
 - **Flexible Build System**: Supports both Make and CMake
 
-## 📁 Project Structure
-
-```
-arm-sme-stencil/
-├── stencil_15x15_sme_optimized.c    # Main implementation
-├── Makefile                          # Make build configuration
-├── CMakeLists.txt                    # CMake configuration
-├── README.md                         # This file
-├── LICENSE                           # MIT License file
-├── .gitignore                        # Git ignore rules
-├── build/                            # Build artifacts (generated)
-│   ├── obj/                          # Object files
-│   └── bin/                          # Executables
-├── doc/                              # Documentation
-│   ├── sme_gemm_benchmark.md         # SME-specific benchmark results
-│   └── xeon_m4_stencil_perf.md      # Intel vs Apple M4 comparison
-└── figures/                           # Image resources
-    └── performance_analysis.png      # Performance charts
-```
-
 ## 🚀 Performance Results
 
 Measured on Apple Silicon M4 (2024 Mac Mini):
 
-| Implementation | Time (μs) | Speedup | Description |
-|---------------|-----------|---------|-------------|
-| **Baseline** | 825.45 | 1.00x | Direct nested-loop convolution |
-| **Im2Row** | 469.80 | 1.76x | GEMV approach |
-| **Stencil2Row** | 838.75 | 0.98x | GEMM method |
-| **SME Single Tile** | 15.45 | 53.43x | Single ZA tile acceleration |
-| **SME 4-Tiles** | **8.70** | **94.88x** | Optimal row-split parallelization |
+| Method | Time (μs) | Speedup vs Baseline | Notes |
+|--------|-----------|-------------------|--------|
+| **Baseline (full)** | 804.15 | 1.00× | Reference implementation |
+| **Im2Row GEMV** | 457.70 | 1.76× | Matrix multiplication only |
+| **Stencil2Row Direct** | 826.55 | 0.97× | Basic implementation |
+| **SME Single Tile** | 15.40 | 52.22× | Single tile SME |
+| **SME 4-Tiles** | **8.75** | **91.90×** | Row split approach |
 
 *Test configuration: 64×64 input, 15×15 kernel, 20 iterations average*
 
@@ -203,4 +183,4 @@ This project is licensed under the MIT License - see LICENSE file for details.
 
 ---
 
-**Note**: This implementation demonstrates the exceptional performance capabilities of ARM SME2 on Apple Silicon, achieving nearly 95x speedup for stencil computations. The row-split 4-tile approach shows optimal utilization of the M4's matrix acceleration hardware.
+**Note**: This implementation demonstrates the exceptional performance capabilities of ARM SME2 on Apple Silicon, achieving nearly 92x speedup for stencil computations. The row-split 4-tile approach shows optimal utilization of the M4's matrix acceleration hardware.
