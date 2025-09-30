@@ -33,7 +33,7 @@ Measured on Apple Silicon M4 (2024 Mac Mini):
 The performance charts reveal significant differences between traditional CPU optimization and hardware-accelerated approaches:
 
 <div align="center">
-  <img src="./figures/performance_analysis.png" alt="15×15 Stencil Performance Analysis" width="100%">
+  <img src="./figures/stencil_15x15_performance_hires.png" alt="15×15 Stencil Performance Analysis" width="100%">
   <br>
   <em>Figure 1: Execution time comparison (left) and speedup factor analysis (right)</em>
 </div>
