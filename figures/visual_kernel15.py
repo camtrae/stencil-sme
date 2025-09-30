@@ -17,30 +17,29 @@ def setup_plot_style():
     # Set scientific paper style
     plt.style.use('seaborn-v0_8-whitegrid')
     
-    # Morandi color palette
     colors = {
-        'intel_primary': '#7B9AAF',    # Dusty blue
-        'intel_light': '#A5C0CE',      # Light dusty blue
-        'apple_primary': '#B5796F',    # Muted terracotta
-        'apple_light': '#D4A5A5',      # Light terracotta
+        'intel_primary': '#045DB7',    # PPT模板蓝（更浅的学术蓝）
+        'intel_light': '#7FA8FF',      # 浅蓝色
+        'apple_primary': '#6A178B',    # PPT模板紫（深紫色）
+        'apple_light': '#B580C5',      # 浅紫色
         'grid': '#E8E8E8',             # Very light grey
-        'text': '#5A5A5A',             # Soft dark grey
-        'highlight': '#C4A57B',        # Sandy beige
-        'baseline': '#9B9B9B',         # Neutral grey
+        'text': '#333333',             # 深灰色（更适合科研出版）
+        'highlight': '#E74C3C',        # 强调色（不再使用）
+        'baseline': '#7F7F7F',         # 中性灰
     }
     
-    # Configure fonts
+    # Configure fonts - INCREASED SIZES
     plt.rcParams.update({
         'font.family': 'serif',
         'font.serif': ['Times New Roman', 'DejaVu Serif'],
-        'font.size': 10,
-        'axes.labelsize': 11,
-        'axes.titlesize': 12,
-        'xtick.labelsize': 9,
-        'ytick.labelsize': 9,
-        'legend.fontsize': 9,
-        'figure.titlesize': 14,
-        'axes.linewidth': 1.2,
+        'font.size': 14,              
+        'axes.labelsize': 15,          
+        'axes.titlesize': 16,          
+        'xtick.labelsize': 12,         
+        'ytick.labelsize': 12,         
+        'legend.fontsize': 12,         
+        'figure.titlesize': 18,        
+        'axes.linewidth': 1.5,         
         'axes.edgecolor': colors['text'],
         'axes.spines.top': False,
         'axes.spines.right': False,
@@ -75,74 +74,71 @@ def create_execution_time_plot(ax, intel_data, apple_data, colors):
     # Intel bars
     intel_bars = []
     for i, (time, threads) in enumerate(zip(intel_data['time'], intel_data['threads'])):
-        color = colors['intel_primary'] if threads > 1 else colors['intel_light']
-        alpha = 0.85 if threads > 1 else 0.7
-        edgecolor = colors['highlight'] if time == min(intel_data['time']) else 'white'
-        linewidth = 2.5 if time == min(intel_data['time']) else 1.2
+        # 使用学术蓝色
+        color = colors['intel_primary']
+        alpha = 0.9  # 提高不透明度，让颜色更饱满
+        # 移除特殊边框高亮，所有柱子都使用白色边框
+        edgecolor = 'white'
+        linewidth = 1.5
         
         bar = ax.bar(x[i] - bar_width/2, time, bar_width,
                      color=color, alpha=alpha, edgecolor=edgecolor, linewidth=linewidth)
         intel_bars.append(bar)
+        
+        # 添加Intel数据标签在柱子上方
+        if time < 100:  # 对于较小的值，直接在上方
+            offset = time * 0.15
+        elif time < 1000:  # 中等值
+            offset = time * 0.08
+        else:  # 较大的值
+            offset = time * 0.05
+        
+        ax.text(x[i] - bar_width/2, time + offset, f'{time:.1f}',
+               ha='center', va='bottom', fontsize=14, fontweight='bold',
+               color=colors['intel_primary'])
     
     # Apple bars
     apple_bars = []
     for i, time in enumerate(apple_data['time']):
-        color = colors['apple_primary'] if time == min(apple_data['time']) else colors['apple_light']
-        alpha = 0.85 if time == min(apple_data['time']) else 0.7
-        edgecolor = colors['highlight'] if time == min(apple_data['time']) else 'white'
-        linewidth = 2.5 if time == min(apple_data['time']) else 1.2
+        # 使用学术金黄色
+        color = colors['apple_primary']
+        alpha = 0.9  # 提高不透明度，让颜色更饱满
+        # 移除特殊边框高亮，所有柱子都使用白色边框
+        edgecolor = 'white'
+        linewidth = 1.5
         
         bar = ax.bar(x[i] + bar_width/2, time, bar_width,
                      color=color, alpha=alpha, edgecolor=edgecolor, linewidth=linewidth)
         apple_bars.append(bar)
-    
-    # Value labels for best performers
-    best_intel_idx = intel_data['time'].index(min(intel_data['time']))
-    best_apple_idx = apple_data['time'].index(min(apple_data['time']))
-
-    # Intel best time label - unified style with Apple
-    intel_best_time = intel_data['time'][best_intel_idx]
-    ax.text(x[best_intel_idx] - bar_width/2, intel_best_time + 9,
-        f'{intel_best_time:.1f} μs', ha='center', va='bottom',
-        fontsize=9, fontweight='bold', color=colors['intel_primary'],
-        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
-                    alpha=0.9, edgecolor=colors['intel_primary'], linewidth=1))
-
-    # Apple best time label - same style
-    apple_best_time = apple_data['time'][best_apple_idx]
-    ax.text(x[best_apple_idx] + bar_width/2, apple_best_time + 1.5,
-        f'{apple_best_time:.1f} μs', ha='center', va='bottom',
-        fontsize=9, fontweight='bold', color=colors['apple_primary'],
-        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
-                    alpha=0.9, edgecolor=colors['apple_primary'], linewidth=1))
+        
+        # 添加Apple数据标签在柱子上方
+        if time < 100:  # 对于较小的值
+            offset = time * 0.15
+        elif time < 1000:  # 中等值
+            offset = time * 0.08
+        else:  # 较大的值
+            offset = time * 0.05
+            
+        ax.text(x[i] + bar_width/2, time + offset, f'{time:.1f}',
+               ha='center', va='bottom', fontsize=14, fontweight='bold',
+               color=colors['apple_primary'])
     
     # Configure axes
     ax.set_ylabel('Execution Time (μs)', fontweight='bold', color=colors['text'])
     ax.set_yscale('log')
     ax.set_ylim([5, 3000])
     ax.set_xticks(x)
-    ax.set_xticklabels(intel_data['methods'], fontsize=9)
+    ax.set_xticklabels(intel_data['methods'], fontsize=14)
     ax.set_title('Execution Time Comparison', fontweight='bold', pad=15, color=colors['text'])
     ax.grid(True, alpha=0.3, linestyle='--', axis='y', color=colors['grid'])
     
     # Legend
     legend_elements = [
-        Patch(facecolor=colors['intel_light'], alpha=0.7, label='Intel (1 thread)'),
-        Patch(facecolor=colors['intel_primary'], alpha=0.85, label='Intel (32 threads)'),
-        Patch(facecolor=colors['apple_light'], alpha=0.7, label='Apple M4 (1 thread)'),
+        Patch(facecolor=colors['intel_primary'], alpha=0.9, label='Intel Xeon Platinum 8358'),
+        Patch(facecolor=colors['apple_primary'], alpha=0.9, label='Apple M4 (SME)'),
     ]
-    ax.legend(handles=legend_elements, loc='upper right', frameon=True, 
+    ax.legend(handles=legend_elements, loc='upper right', frameon=True, fontsize=14,
              framealpha=0.95, fancybox=False, edgecolor=colors['grid'])
-    
-    # Performance summary
-    perf_text = (f"Best Performance:\n"
-                f"Intel: {intel_data['time'][best_intel_idx]:.1f} μs (32t)\n"
-                f"Apple: {apple_data['time'][best_apple_idx]:.1f} μs (1t)\n"
-                f"M4 Advantage: {intel_data['time'][best_intel_idx]/apple_data['time'][best_apple_idx]:.1f}×")
-    ax.text(0.02, 0.98, perf_text, transform=ax.transAxes,
-           fontsize=8.5, verticalalignment='top',
-           bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.95, 
-                    edgecolor=colors['text'], linewidth=1))
 
 def create_speedup_plot(ax, intel_data, apple_data, colors):
     """Create the speedup factor line chart"""
@@ -151,57 +147,82 @@ def create_speedup_plot(ax, intel_data, apple_data, colors):
     # Intel speedup line
     ax.plot(optimization_levels, intel_data['speedup'], 
            'o-', color=colors['intel_primary'], 
-           linewidth=2.5, markersize=9, markeredgewidth=2,
+           linewidth=3.0, markersize=11, markeredgewidth=2.5,
            markeredgecolor='white', label='Intel Xeon Platinum 8358', 
            alpha=0.9, zorder=3)
     
-    # Intel data labels
+    # Intel数据标签 - 智能放置以避免重叠
+    intel_label_positions = [
+        (0, 0.7, 'bottom'),       # Baseline - 上方（增加间距）
+        (1, 0.7, 'bottom'),       # im2row - 上方（增加间距）
+        (2, 0.8, 'bottom'),   # Stencil2Row - 下方
+        (3, 1.3, 'top'),       # SIMD - 上方
+        (4, 1.3, 'top'),       # OpenMP - 上方
+    ]
+    
     for i, (x, y) in enumerate(zip(optimization_levels, intel_data['speedup'])):
-        if i in [0, 2, 4]:
-            ax.text(x, y * 1.15, f'{y:.1f}×', ha='center', va='bottom',
-                   fontsize=8.5, color=colors['intel_primary'], fontweight='bold')
+        _, y_mult, va = intel_label_positions[i]
+        if va == 'top':
+            y_pos = y * y_mult
+            va_text = 'bottom'
+        else:
+            y_pos = y * y_mult
+            va_text = 'top'
+        
+        ax.text(x, y_pos, f'{y:.1f}×', 
+               ha='center', va=va_text,
+               fontsize=14, color=colors['intel_primary'], 
+               fontweight='bold',
+               bbox=dict(boxstyle='round,pad=0.2', facecolor='white', 
+                        alpha=0.8, edgecolor=colors['intel_primary'], linewidth=0.5))
     
     # Apple speedup line
     ax.plot(optimization_levels, apple_data['speedup'],
            's-', color=colors['apple_primary'],
-           linewidth=2.5, markersize=9, markeredgewidth=2,
+           linewidth=3.0, markersize=11, markeredgewidth=2.5,
            markeredgecolor='white', label='Apple M4 (SME)', 
            alpha=0.9, zorder=3)
     
-    # Apple data labels
+    # Apple数据标签 - 智能放置以避免重叠
+    apple_label_positions = [
+        (0, 1.3, 'top'),    # Baseline - 下方（增加间距）
+        (1, 1.3, 'top'),    # Im2Row - 下方（增加间距）
+        (2, 1.3, 'top'),       # Stencil2Row - 上方
+        (3, 1.3, 'top'),    # SME Single - 下方
+        (4, 1.3, 'top'),    # SME 4-Tiles - 下方
+    ]
+    
     for i, (x, y) in enumerate(zip(optimization_levels, apple_data['speedup'])):
-        if i in [0, 3, 4]:
-            offset_y = 0.85 if i == 4 else 1.15
-            ax.text(x, y * offset_y, f'{y:.1f}×', ha='center', 
-                   va='top' if i == 4 else 'bottom',
-                   fontsize=8.5, color=colors['apple_primary'], fontweight='bold')
+        _, y_mult, va = apple_label_positions[i]
+        if va == 'top':
+            y_pos = y * y_mult
+            va_text = 'bottom'
+        else:
+            y_pos = y * y_mult
+            va_text = 'top'
+            
+        ax.text(x, y_pos, f'{y:.1f}×', 
+               ha='center', va=va_text,
+               fontsize=14, color=colors['apple_primary'], 
+               fontweight='bold',
+               bbox=dict(boxstyle='round,pad=0.2', facecolor='white', 
+                        alpha=0.8, edgecolor=colors['apple_primary'], linewidth=0.5))
     
     # Baseline reference line
     ax.axhline(y=1.0, color=colors['baseline'], 
-              linestyle='--', linewidth=1.5, alpha=0.5, label='Baseline (1.0×)', zorder=1)
+              linestyle='--', linewidth=2.0, alpha=0.5, label='Baseline (1.0×)', zorder=1)
     
-    # Configure axes - Now using the same method names as the first plot
+    # Configure axes
     ax.set_ylabel('Speedup Factor (×)', fontweight='bold', color=colors['text'])
     ax.set_yscale('log')
-    ax.set_ylim([0.4, 150])
+    ax.set_ylim([0.3, 200])  # 稍微增加上限以容纳标签
     ax.set_xlim([-0.3, 4.3])
     ax.set_xticks(optimization_levels)
-    # Use the same method names as in the first plot for consistency
-    ax.set_xticklabels(intel_data['methods'], fontsize=9)
+    ax.set_xticklabels(intel_data['methods'], fontsize=14)
     ax.set_title('Speedup Factor Analysis', fontweight='bold', pad=15, color=colors['text'])
-    ax.legend(loc='upper left', frameon=True, framealpha=0.95, fontsize=9,
+    ax.legend(loc='upper left', frameon=True, framealpha=0.95, fontsize=14,
              fancybox=False, edgecolor=colors['grid'])
     ax.grid(True, alpha=0.3, linestyle='--', zorder=0, color=colors['grid'])
-    
-    # Speedup summary
-    speedup_text = (f"Peak Speedup:\n"
-                   f"Intel: {intel_data['speedup'][-1]:.1f}× (32t)\n"
-                   f"Apple: {apple_data['speedup'][-1]:.1f}× (1t)\n"
-                   f"Efficiency: {apple_data['speedup'][-1]/intel_data['speedup'][-1]:.1f}× better")
-    ax.text(0.98, 0.02, speedup_text, transform=ax.transAxes,
-           fontsize=8.5, verticalalignment='bottom', ha='right',
-           bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.95,
-                    edgecolor=colors['text'], linewidth=1))
 
 def main():
     """Main function to create and save the visualization"""
@@ -212,8 +233,8 @@ def main():
     colors = setup_plot_style()
     intel_data, apple_data = load_data()
     
-    # Create figure
-    fig = plt.figure(figsize=(14, 6))
+    # Create figure - 增加图形大小以适应更大的字体
+    fig = plt.figure(figsize=(16, 7))
     
     # Create subplots
     ax1 = fig.add_subplot(1, 2, 1)
@@ -225,11 +246,7 @@ def main():
     
     # Overall title and footer
     fig.suptitle('15×15 Stencil Computation Performance Analysis', 
-                fontsize=15, fontweight='bold', y=1.02, color=colors['text'])
-    
-    fig.text(0.5, 0.01, 
-            'Intel Xeon Platinum 8358 (32 cores @ 2.6 GHz) vs Apple M4 (Single P-core @ 4.4 GHz)',
-            ha='center', fontsize=9, style='italic', color=colors['text'], alpha=0.8)
+                fontsize=19, fontweight='bold', y=1.02, color=colors['text'])
     
     # Adjust layout
     plt.tight_layout()
@@ -246,15 +263,15 @@ def main():
     print("-" * 50)
     
     for fmt, settings in output_formats.items():
-        filename = f'stencil_performance_comparison.{fmt}'
+        filename = f'stencil_15x15_performance_comparison.{fmt}'
         plt.savefig(filename, dpi=settings['dpi'], 
                    bbox_inches='tight', facecolor='white')
         print(f'✓ Saved {filename} - {settings["desc"]}')
     
     # High-resolution version
-    plt.savefig('performance_analysis.png', dpi=600, 
+    plt.savefig('stencil_15x15_performance_hires.png', dpi=600, 
                bbox_inches='tight', facecolor='white')
-    print('✓ Saved stencil_performance_comparison_hires.png - Publication quality (600 DPI)')
+    print('✓ Saved stencil_15x15_performance_hires.png - Publication quality (600 DPI)')
     
     # Display summary
     print("\n" + "=" * 50)
